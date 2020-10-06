@@ -1,0 +1,109 @@
+basePath: /api/v1
+consumes:
+- application/json
+definitions:
+  User:
+    properties:
+      cellphone:
+        type: string
+        x-go-name: Cellphone
+      created_at:
+        format: date-time
+        type: string
+        x-go-name: CreatedAt
+      id:
+        format: uint32
+        type: integer
+        x-go-name: ID
+      name:
+        type: string
+        x-go-name: Name
+      updated_at:
+        format: date-time
+        type: string
+        x-go-name: UpdatedAt
+    type: object
+    x-go-package: mercafacil-challenge/api/models
+  UserRequest:
+    properties:
+      Cellphone:
+        type: string
+      Name:
+        type: string
+    type: object
+    x-go-package: mercafacil-challenge/api/docs
+info:
+  description: This is a system integration for Macapá and VareJão.
+  title: REST API - Macapá and VareJão
+  version: 1.0.0
+paths:
+  /api/v1:
+    get:
+      description: Gets all users
+      operationId: getAllUsers
+      responses:
+        "200":
+          $ref: '#/responses/usersResponse'
+      tags:
+      - Users
+    post:
+      description: Creates a new user
+      operationId: createUser
+      parameters:
+      - description: Data to create a new user.
+        in: body
+        name: Body
+        schema:
+          $ref: '#/definitions/UserRequest'
+      responses:
+        "200":
+          $ref: '#/responses/usersResponse'
+      tags:
+      - Users
+  /api/v1/{id}:
+    delete:
+      description: Updates a user by ID
+      operationId: deleteUser
+      responses:
+        "200":
+          $ref: '#/responses/userResponse'
+      tags:
+      - Users
+    get:
+      description: Gets a user by ID
+      operationId: getUserByID
+      responses:
+        "200":
+          $ref: '#/responses/userResponse'
+      tags:
+      - Users
+    put:
+      description: Updates a user by ID
+      operationId: updateUserByID
+      responses:
+        "200":
+          $ref: '#/responses/userResponse'
+      tags:
+      - Users
+produces:
+- application/json
+responses:
+  userResponse:
+    description: Data structure representing a single product
+    schema:
+      $ref: '#/definitions/User'
+  usersResponse:
+    description: A list of users
+    schema:
+      items:
+        $ref: '#/definitions/User'
+      type: array
+schemes:
+- http
+securityDefinitions:
+  bearer:
+    in: header
+    name: Authorization
+    tokenUrl: /api/v1/auth/jwt
+    type: apiKey
+swagger: "2.0"

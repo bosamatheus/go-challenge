@@ -1,4 +1,4 @@
-package services
+package controllers
 
 import (
 	"encoding/json"
@@ -32,6 +32,63 @@ func GetDB(client string, server *Server) *gorm.DB {
 	return nil
 }
 
+// swagger:route GET /api/v1/{id} Users getUserByID
+// Gets a user by ID
+// responses:
+//   200: userResponse
+func (server *Server) GetUserByID(w http.ResponseWriter, r *http.Request) {
+	log.Println("GetUser")
+	client, err := auth.ExtractClient(r)
+	if err != nil {
+		responses.ERROR(w, http.StatusUnauthorized, errors.New("Unauthorized"))
+		return
+	}
+	log.Println("Client", client)
+
+	vars := mux.Vars(r)
+	id, err := strconv.ParseUint(vars["id"], 10, 32)
+	if err != nil {
+		responses.ERROR(w, http.StatusBadRequest, err)
+		return
+	}
+
+	DB := GetDB(client, server)
+	user := models.User{}
+	userGotten, err := user.FindUserByID(DB, uint32(id))
+	if err != nil {
+		responses.ERROR(w, http.StatusBadRequest, err)
+		return
+	}
+	responses.JSON(w, http.StatusOK, userGotten)
+}
+
+// swagger:route GET /api/v1 Users getAllUsers
+// Gets all users
+// responses:
+//   200: usersResponse
+func (server *Server) GetAllUsers(w http.ResponseWriter, r *http.Request) {
+	log.Println("GetUsers")
+	client, err := auth.ExtractClient(r)
+	if err != nil {
+		responses.ERROR(w, http.StatusUnauthorized, errors.New("Unauthorized"))
+		return
+	}
+	log.Println("Client", client)
+
+	DB := GetDB(client, server)
+	user := models.User{}
+	users, err := user.FindAllUsers(DB)
+	if err != nil {
+		responses.ERROR(w, http.StatusInternalServerError, err)
+		return
+	}
+	responses.JSON(w, http.StatusOK, users)
+}
+
+// swagger:route POST /api/v1 Users createUser
+// Creates a new user
+// responses:
+//   200: usersResponse
 func (server *Server) CreateUser(w http.ResponseWriter, r *http.Request) {
 	log.Println("CreateUser")
 	client, err := auth.ExtractClient(r)
@@ -71,52 +128,11 @@ func (server *Server) CreateUser(w http.ResponseWriter, r *http.Request) {
 	responses.JSON(w, http.StatusCreated, userCreated)
 }
 
-func (server *Server) GetUsers(w http.ResponseWriter, r *http.Request) {
-	log.Println("GetUsers")
-	client, err := auth.ExtractClient(r)
-	if err != nil {
-		responses.ERROR(w, http.StatusUnauthorized, errors.New("Unauthorized"))
-		return
-	}
-	log.Println("Client", client)
-
-	DB := GetDB(client, server)
-	user := models.User{}
-	users, err := user.FindAllUsers(DB)
-	if err != nil {
-		responses.ERROR(w, http.StatusInternalServerError, err)
-		return
-	}
-	responses.JSON(w, http.StatusOK, users)
-}
-
-func (server *Server) GetUser(w http.ResponseWriter, r *http.Request) {
-	log.Println("GetUser")
-	client, err := auth.ExtractClient(r)
-	if err != nil {
-		responses.ERROR(w, http.StatusUnauthorized, errors.New("Unauthorized"))
-		return
-	}
-	log.Println("Client", client)
-
-	vars := mux.Vars(r)
-	id, err := strconv.ParseUint(vars["id"], 10, 32)
-	if err != nil {
-		responses.ERROR(w, http.StatusBadRequest, err)
-		return
-	}
-
-	DB := GetDB(client, server)
-	user := models.User{}
-	userGotten, err := user.FindUserByID(DB, uint32(id))
-	if err != nil {
-		responses.ERROR(w, http.StatusBadRequest, err)
-		return
-	}
-	responses.JSON(w, http.StatusOK, userGotten)
-}
-
-func (server *Server) UpdateUser(w http.ResponseWriter, r *http.Request) {
+// swagger:route PUT /api/v1/{id} Users updateUserByID
+// Updates a user by ID
+// responses:
+//   200: userResponse
+func (server *Server) UpdateUserByID(w http.ResponseWriter, r *http.Request) {
 	log.Println("UpdateUser")
 	client, err := auth.ExtractClient(r)
 	if err != nil {
@@ -154,7 +170,11 @@ func (server *Server) UpdateUser(w http.ResponseWriter, r *http.Request) {
 	responses.JSON(w, http.StatusOK, updatedUser)
 }
 
-func (server *Server) DeleteUser(w http.ResponseWriter, r *http.Request) {
+// swagger:route DELETE /api/v1/{id} Users deleteUser
+// Updates a user by ID
+// responses:
+//   200: userResponse
+func (server *Server) DeleteUserByID(w http.ResponseWriter, r *http.Request) {
 	log.Println("DeleteUser")
 	client, err := auth.ExtractClient(r)
 	if err != nil {

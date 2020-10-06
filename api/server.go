@@ -2,15 +2,14 @@ package api
 
 import (
 	"log"
-	"os"
-
+	"mercafacil-challenge/api/controllers"
 	"mercafacil-challenge/api/seeder"
-	"mercafacil-challenge/api/services"
+	"os"
 
 	"github.com/joho/godotenv"
 )
 
-var server = services.Server{}
+var server = controllers.Server{}
 
 func Run() {
 	var err error
