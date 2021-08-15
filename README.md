@@ -1,4 +1,4 @@
-# Desafio Backend Mercafácil
+# Teste backend em Golang
 
 O objetivo deste teste é avaliar seu desempenho em desenvolver uma solução de integração entre sistemas.
 
